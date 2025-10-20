@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="space-y-8 fade-in">
+    <!-- Hero Section -->
+    <div class="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
+        <div class="text-center">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-blue-100 rounded-full mb-4">
+                <span class="text-4xl">🤖</span>
+            </div>
+            <h1 class="text-4xl font-bold text-slate-900 mb-3">
+                Customer Support Ticket Classifier
+            </h1>
+            <p class="text-lg text-slate-600 max-w-2xl mx-auto">
+                AI-powered ticket classification using <span class="font-semibold text-blue-600">GPT-4o-mini</span>.
+                Automatically categorizes support tickets by urgency, intent, and product area.
+            </p>
+        </div>
+    </div>
+
+    <!-- Classification Dimensions -->
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-lg shadow-md p-6 border border-slate-200 hover:shadow-lg transition">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                    <span class="text-2xl">⚡</span>
+                </div>
+                <h3 class="text-lg font-semibold text-slate-900">Urgency</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-slate-600">
+                <li><span class="font-medium text-red-600">Critical:</span> System down, blocker</li>
+                <li><span class="font-medium text-orange-600">High:</span> Major functionality affected</li>
+                <li><span class="font-medium text-yellow-600">Medium:</span> Feature request, minor issue</li>
+                <li><span class="font-medium text-green-600">Low:</span> General inquiry</li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6 border border-slate-200 hover:shadow-lg transition">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <span class="text-2xl">🎯</span>
+                </div>
+                <h3 class="text-lg font-semibold text-slate-900">Intent</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-slate-600">
+                <li>🐛 Bug Report</li>
+                <li>✨ Feature Request</li>
+                <li>👤 Account Issue</li>
+                <li>💰 Billing Inquiry</li>
+                <li>❓ How-To</li>
+                <li>🔌 Integration</li>
+            </ul>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-md p-6 border border-slate-200 hover:shadow-lg transition">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <span class="text-2xl">📦</span>
+                </div>
+                <h3 class="text-lg font-semibold text-slate-900">Product Area</h3>
+            </div>
+            <ul class="space-y-2 text-sm text-slate-600">
+                <li>⚙️ API</li>
+                <li>🖥️ Dashboard</li>
+                <li>📱 Mobile App</li>
+                <li>🔗 Integrations</li>
+                <li>💳 Billing</li>
+                <li>🔐 Authentication</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Quick Test CTA -->
+    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white">
+        <div class="flex items-center justify-between">
+            <div>
+                <h2 class="text-2xl font-bold mb-2">🧪 Ready to test?</h2>
+                <p class="text-blue-100">Classify 5 example support tickets in ~10 seconds</p>
+            </div>
+            <button onclick="startClassification()" id="classifyButton" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition shadow-md">
+                <span id="buttonText">Run Classification</span>
+                <span id="buttonLoading" class="hidden">
+                    <svg class="animate-spin h-5 w-5 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Classifying...
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <!-- API Endpoints -->
+    <div class="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
+        <h2 class="text-2xl font-bold text-slate-900 mb-6">📚 API Endpoints</h2>
+
+        <div class="space-y-4">
+            <!-- GET /examples -->
+            <div class="border border-slate-200 rounded-lg p-4 hover:border-blue-300 transition">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-3">
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-mono rounded">GET</span>
+                        <code class="text-sm font-mono text-slate-700">/examples</code>
+                    </div>
+                    <a href="/examples" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Try it →</a>
+                </div>
+                <p class="text-sm text-slate-600">Retrieve 5 example tickets (without classification)</p>
+            </div>
+
+            <!-- GET /classify-examples -->
+            <div class="border border-slate-200 rounded-lg p-4 hover:border-blue-300 transition">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-3">
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-mono rounded">GET</span>
+                        <code class="text-sm font-mono text-slate-700">/classify-examples</code>
+                    </div>
+                    <a href="/classify-examples-view" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Try it →</a>
+                </div>
+                <p class="text-sm text-slate-600">Classify all 5 example tickets using AI</p>
+            </div>
+
+            <!-- POST /classify -->
+            <div class="border border-slate-200 rounded-lg p-4 hover:border-blue-300 transition">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-3">
+                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-mono rounded">POST</span>
+                        <code class="text-sm font-mono text-slate-700">/classify</code>
+                    </div>
+                    <a href="/docs#/default/classify_ticket_classify_post" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Docs →</a>
+                </div>
+                <p class="text-sm text-slate-600">Classify a custom ticket (JSON body required)</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function startClassification() {
+        const button = document.getElementById('classifyButton');
+        const buttonText = document.getElementById('buttonText');
+        const buttonLoading = document.getElementById('buttonLoading');
+        const overlay = document.getElementById('globalLoadingOverlay');
+
+        // Disable button and show loading
+        button.disabled = true;
+        buttonText.classList.add('hidden');
+        buttonLoading.classList.remove('hidden');
+
+        if (overlay) {
+            overlay.classList.remove('hidden');
+        }
+
+        // Redirect to classification endpoint
+        window.location.href = '/classify-examples-view';
+    }
+    </script>
+</div>
+{% endblock %}

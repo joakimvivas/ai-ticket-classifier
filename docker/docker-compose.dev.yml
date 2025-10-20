@@ -1,0 +1,19 @@
+services:
+  # Inngest Dev Server (Background Processing)
+  inngest:
+    image: inngest/inngest:latest
+    container_name: ticket-classifier-inngest
+    command: "inngest dev -u http://host.docker.internal:8000/api/inngest --no-discovery"
+    ports:
+      - "8288:8288"
+    environment:
+      - INNGEST_LOG_LEVEL=info
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8288/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

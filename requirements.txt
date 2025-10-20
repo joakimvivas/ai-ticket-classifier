@@ -1,0 +1,22 @@
+# FastAPI web framework
+fastapi==0.109.0
+uvicorn[standard]==0.27.0
+
+# Templates
+jinja2==3.1.4
+
+# Environment variables
+python-dotenv==1.0.0
+
+# OpenAI SDK for GPT-4o-mini
+openai==1.54.0
+
+# Data validation
+pydantic==2.9.2
+pydantic-settings==2.6.0
+
+# HTTP client (for testing)
+httpx==0.26.0
+
+# Rich output for CLI (optional)
+rich==13.7.0

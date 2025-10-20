@@ -71,73 +71,113 @@
     </div>
 
     <!-- Quick Test CTA -->
-    <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-8 text-white">
-        <div class="flex items-center justify-between">
-            <div>
-                <h2 class="text-2xl font-bold mb-2">🧪 Ready to test?</h2>
-                <p class="text-blue-100">Classify 5 example support tickets in ~10 seconds</p>
-            </div>
-            <button onclick="startClassification()" id="classifyButton" class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-blue-50 transition shadow-md">
-                <span id="buttonText">Run Classification</span>
-                <span id="buttonLoading" class="hidden">
-                    <svg class="animate-spin h-5 w-5 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Classifying...
-                </span>
-            </button>
-        </div>
-    </div>
-
-    <!-- API Endpoints -->
     <div class="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
-        <h2 class="text-2xl font-bold text-slate-900 mb-6">📚 API Endpoints</h2>
+        <h2 class="text-2xl font-bold text-slate-900 mb-6">🧪 Test Classification</h2>
+        <p class="text-slate-600 mb-6">Choose how you want to classify 5 example support tickets:</p>
 
-        <div class="space-y-4">
-            <!-- GET /examples -->
-            <div class="border border-slate-200 rounded-lg p-4 hover:border-blue-300 transition">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center space-x-3">
-                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-mono rounded">GET</span>
-                        <code class="text-sm font-mono text-slate-700">/examples</code>
+        <div class="grid md:grid-cols-2 gap-6">
+            <!-- Synchronous Classification -->
+            <div class="border-2 border-blue-500 rounded-xl p-6 hover:shadow-lg transition">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <span class="text-2xl">⚡</span>
                     </div>
-                    <a href="/examples" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Try it →</a>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Quick Classification</h3>
+                        <p class="text-sm text-slate-500">Synchronous • Instant Results</p>
+                    </div>
                 </div>
-                <p class="text-sm text-slate-600">Retrieve 5 example tickets (without classification)</p>
+                <ul class="space-y-2 text-sm text-slate-600 mb-6">
+                    <li class="flex items-start">
+                        <span class="text-green-500 mr-2">✓</span>
+                        <span>Immediate response (~10s)</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-500 mr-2">✓</span>
+                        <span>See results instantly</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-500 mr-2">✓</span>
+                        <span>Saved to Qdrant (synchronous)</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-yellow-600 mr-2">⚠️</span>
+                        <span>Blocking (waits for completion)</span>
+                    </li>
+                </ul>
+                <button onclick="startClassificationSync()" id="classifyButtonSync" class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition shadow-md">
+                    <span id="buttonTextSync">Run Quick Classification</span>
+                    <span id="buttonLoadingSync" class="hidden">
+                        <svg class="animate-spin h-5 w-5 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Classifying...
+                    </span>
+                </button>
             </div>
 
-            <!-- GET /classify-examples -->
-            <div class="border border-slate-200 rounded-lg p-4 hover:border-blue-300 transition">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center space-x-3">
-                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-mono rounded">GET</span>
-                        <code class="text-sm font-mono text-slate-700">/classify-examples</code>
+            <!-- Asynchronous Classification with Inngest + Qdrant -->
+            <div class="border-2 border-purple-500 rounded-xl p-6 hover:shadow-lg transition">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                        <span class="text-2xl">🚀</span>
                     </div>
-                    <a href="/classify-examples-view" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Try it →</a>
+                    <div>
+                        <h3 class="text-lg font-bold text-slate-900">Production Mode</h3>
+                        <p class="text-sm text-slate-500">Inngest + Qdrant • Scalable</p>
+                    </div>
                 </div>
-                <p class="text-sm text-slate-600">Classify all 5 example tickets using AI</p>
+                <ul class="space-y-2 text-sm text-slate-600 mb-6">
+                    <li class="flex items-start">
+                        <span class="text-green-500 mr-2">✓</span>
+                        <span>Background processing (Inngest)</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-500 mr-2">✓</span>
+                        <span>Saved to vector DB (Qdrant)</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-green-500 mr-2">✓</span>
+                        <span>Semantic search enabled</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-yellow-600 mr-2">⏳</span>
+                        <span>Results in ~15-20s</span>
+                    </li>
+                </ul>
+                <button onclick="startClassificationAsync()" id="classifyButtonAsync" class="w-full bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition shadow-md">
+                    <span id="buttonTextAsync">Run with Inngest + Qdrant</span>
+                    <span id="buttonLoadingAsync" class="hidden">
+                        <svg class="animate-spin h-5 w-5 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Queueing...
+                    </span>
+                </button>
             </div>
+        </div>
 
-            <!-- POST /classify -->
-            <div class="border border-slate-200 rounded-lg p-4 hover:border-blue-300 transition">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center space-x-3">
-                        <span class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-mono rounded">POST</span>
-                        <code class="text-sm font-mono text-slate-700">/classify</code>
-                    </div>
-                    <a href="/docs#/default/classify_ticket_classify_post" class="text-blue-600 hover:text-blue-700 text-sm font-medium">Docs →</a>
+        <!-- Info Box -->
+        <div class="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div class="flex items-start space-x-3">
+                <span class="text-blue-600 text-xl">💡</span>
+                <div class="text-sm text-blue-800">
+                    <p class="font-semibold mb-1">Which one should I use?</p>
+                    <p><strong>Quick Classification:</strong> Synchronous processing. Best for demos and when you need instant visual feedback. Saves to Qdrant after classification.</p>
+                    <p class="mt-1"><strong>Production Mode:</strong> Asynchronous processing via Inngest. Scalable for high-volume workloads. Non-blocking, processes in background and saves to Qdrant. Monitor progress in Inngest UI.</p>
                 </div>
-                <p class="text-sm text-slate-600">Classify a custom ticket (JSON body required)</p>
             </div>
         </div>
     </div>
 
     <script>
-    function startClassification() {
-        const button = document.getElementById('classifyButton');
-        const buttonText = document.getElementById('buttonText');
-        const buttonLoading = document.getElementById('buttonLoading');
+    // Synchronous classification (instant results)
+    function startClassificationSync() {
+        const button = document.getElementById('classifyButtonSync');
+        const buttonText = document.getElementById('buttonTextSync');
+        const buttonLoading = document.getElementById('buttonLoadingSync');
         const overlay = document.getElementById('globalLoadingOverlay');
 
         // Disable button and show loading
@@ -151,6 +191,57 @@
 
         // Redirect to classification endpoint
         window.location.href = '/classify-examples-view';
+    }
+
+    // Asynchronous classification with Inngest + Qdrant
+    async function startClassificationAsync() {
+        const button = document.getElementById('classifyButtonAsync');
+        const buttonText = document.getElementById('buttonTextAsync');
+        const buttonLoading = document.getElementById('buttonLoadingAsync');
+        const overlay = document.getElementById('globalLoadingOverlay');
+
+        // Disable button and show loading
+        button.disabled = true;
+        buttonText.classList.add('hidden');
+        buttonLoading.classList.remove('hidden');
+
+        if (overlay) {
+            overlay.classList.remove('hidden');
+        }
+
+        try {
+            // Send batch classification request
+            const response = await fetch('/api/classify-examples-async', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Redirect to results page or show success message
+                alert(`✅ Classification queued!\n\nJob ID: ${data.job_id}\n\nProcessing in background via Inngest. Check http://localhost:8288 for progress.`);
+
+                // Poll for results or redirect
+                setTimeout(() => {
+                    window.location.href = '/classify-examples-view';
+                }, 2000);
+            } else {
+                alert(`Error: ${data.detail || 'Failed to queue classification'}`);
+                button.disabled = false;
+                buttonText.classList.remove('hidden');
+                buttonLoading.classList.add('hidden');
+                if (overlay) overlay.classList.add('hidden');
+            }
+        } catch (error) {
+            alert(`Network error: ${error.message}`);
+            button.disabled = false;
+            buttonText.classList.remove('hidden');
+            buttonLoading.classList.add('hidden');
+            if (overlay) overlay.classList.add('hidden');
+        }
     }
     </script>
 </div>

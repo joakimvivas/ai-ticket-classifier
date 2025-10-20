@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Semantic Search - AI Ticket Classifier{% endblock %}
+
+{% block content %}
+<div class="space-y-6 fade-in">
+    <!-- Header -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+        <div class="flex items-center space-x-3 mb-2">
+            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                <span class="text-2xl">🔍</span>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-slate-900">Semantic Search</h1>
+                <p class="text-slate-600 mt-1">Find similar support tickets using AI-powered vector search</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="bg-white rounded-xl shadow-lg p-8 border border-slate-200">
+        <div class="max-w-3xl mx-auto">
+            <label class="block text-sm font-medium text-slate-700 mb-2">
+                Describe your issue or search for similar tickets
+            </label>
+            <div class="flex space-x-4">
+                <input
+                    type="text"
+                    id="searchQuery"
+                    placeholder="e.g., Login problems with email verification..."
+                    class="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    onkeypress="if(event.key === 'Enter') searchTickets()"
+                />
+                <button
+                    onclick="searchTickets()"
+                    id="searchButton"
+                    class="bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition shadow-md">
+                    <span id="searchButtonText">Search</span>
+                    <span id="searchButtonLoading" class="hidden">
+                        <svg class="animate-spin h-5 w-5 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Searching...
+                    </span>
+                </button>
+            </div>
+
+            <!-- Filters -->
+            <div class="mt-4 flex items-center space-x-4">
+                <label class="flex items-center text-sm text-slate-600">
+                    <span class="mr-2">Filter by urgency:</span>
+                    <select id="urgencyFilter" class="border border-slate-300 rounded px-3 py-1 text-sm">
+                        <option value="">All</option>
+                        <option value="critical">Critical</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </label>
+                <label class="flex items-center text-sm text-slate-600">
+                    <span class="mr-2">Results:</span>
+                    <select id="limitFilter" class="border border-slate-300 rounded px-3 py-1 text-sm">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                    </select>
+                </label>
+            </div>
+
+            <!-- Example Searches -->
+            <div class="mt-6">
+                <p class="text-sm font-medium text-slate-700 mb-2">Try these examples:</p>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="setQuery('Cannot access my account')" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-700 transition">
+                        Cannot access my account
+                    </button>
+                    <button onclick="setQuery('Billing issues with payment')" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-700 transition">
+                        Billing issues
+                    </button>
+                    <button onclick="setQuery('Integration not working')" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-700 transition">
+                        Integration problems
+                    </button>
+                    <button onclick="setQuery('Slow performance dashboard')" class="text-xs px-3 py-1 bg-slate-100 hover:bg-slate-200 rounded-full text-slate-700 transition">
+                        Performance issues
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results -->
+    <div id="searchResults" class="hidden">
+        <!-- Results will be populated here -->
+    </div>
+
+    <!-- Empty State -->
+    <div id="emptyState" class="bg-slate-50 rounded-xl p-12 text-center">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-slate-200 rounded-full mb-4">
+            <span class="text-4xl">🔎</span>
+        </div>
+        <h3 class="text-xl font-semibold text-slate-700 mb-2">No searches yet</h3>
+        <p class="text-slate-500">Enter a query above to find similar support tickets using semantic search</p>
+    </div>
+
+    <!-- Stats -->
+    <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+        <h3 class="text-lg font-semibold text-slate-900 mb-4">Vector Database Stats</h3>
+        <div class="grid md:grid-cols-3 gap-4" id="statsContainer">
+            <div class="text-center p-4 bg-purple-50 rounded-lg">
+                <div class="text-3xl font-bold text-purple-600" id="ticketsCount">-</div>
+                <div class="text-sm text-slate-600 mt-1">Tickets Indexed</div>
+            </div>
+            <div class="text-center p-4 bg-blue-50 rounded-lg">
+                <div class="text-3xl font-bold text-blue-600" id="kbCount">-</div>
+                <div class="text-sm text-slate-600 mt-1">KB Articles</div>
+            </div>
+            <div class="text-center p-4 bg-green-50 rounded-lg">
+                <div class="text-3xl font-bold text-green-600" id="totalVectors">-</div>
+                <div class="text-sm text-slate-600 mt-1">Total Vectors</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Load stats on page load
+document.addEventListener('DOMContentLoaded', loadStats);
+
+async function loadStats() {
+    try {
+        const response = await fetch('/api/vector-stats');
+        const data = await response.json();
+
+        document.getElementById('ticketsCount').textContent = data.tickets_count || 0;
+        document.getElementById('kbCount').textContent = data.knowledge_base_count || 0;
+        document.getElementById('totalVectors').textContent = data.total_vectors || 0;
+    } catch (error) {
+        console.error('Failed to load stats:', error);
+    }
+}
+
+function setQuery(query) {
+    document.getElementById('searchQuery').value = query;
+    searchTickets();
+}
+
+async function searchTickets() {
+    const query = document.getElementById('searchQuery').value.trim();
+    const urgency = document.getElementById('urgencyFilter').value;
+    const limit = document.getElementById('limitFilter').value;
+
+    if (!query) {
+        alert('Please enter a search query');
+        return;
+    }
+
+    // Show loading state
+    const button = document.getElementById('searchButton');
+    const buttonText = document.getElementById('searchButtonText');
+    const buttonLoading = document.getElementById('searchButtonLoading');
+    button.disabled = true;
+    buttonText.classList.add('hidden');
+    buttonLoading.classList.remove('hidden');
+
+    // Hide empty state
+    document.getElementById('emptyState').classList.add('hidden');
+
+    try {
+        // Build query params
+        let url = `/api/search-similar?query=${encodeURIComponent(query)}&limit=${limit}`;
+        if (urgency) {
+            url += `&urgency=${urgency}`;
+        }
+
+        const response = await fetch(url);
+        const data = await response.json();
+
+        displayResults(data, query);
+    } catch (error) {
+        alert(`Search failed: ${error.message}`);
+    } finally {
+        button.disabled = false;
+        buttonText.classList.remove('hidden');
+        buttonLoading.classList.add('hidden');
+    }
+}
+
+function displayResults(data, query) {
+    const resultsContainer = document.getElementById('searchResults');
+
+    if (!data.results || data.results.length === 0) {
+        resultsContainer.innerHTML = `
+            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-8 text-center">
+                <span class="text-4xl mb-2 block">😕</span>
+                <h3 class="text-lg font-semibold text-yellow-900">No similar tickets found</h3>
+                <p class="text-yellow-700 mt-2">Try a different search query or check if tickets are indexed.</p>
+            </div>
+        `;
+        resultsContainer.classList.remove('hidden');
+        return;
+    }
+
+    const resultsHTML = `
+        <div class="bg-white rounded-xl shadow-lg p-6 border border-slate-200">
+            <h2 class="text-2xl font-bold text-slate-900 mb-2">Search Results</h2>
+            <p class="text-slate-600 mb-6">Found ${data.count} similar ticket${data.count !== 1 ? 's' : ''} for: <span class="font-semibold">"${query}"</span></p>
+
+            <div class="space-y-4">
+                ${data.results.map((result, idx) => `
+                    <div class="border border-slate-200 rounded-lg p-4 hover:border-purple-300 hover:shadow-md transition">
+                        <div class="flex items-start justify-between mb-3">
+                            <div class="flex items-center space-x-3">
+                                <span class="text-2xl font-bold text-slate-400">#${idx + 1}</span>
+                                <div>
+                                    <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-mono rounded-full">
+                                        ${result.ticket_id}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <div class="text-right">
+                                    <div class="text-xs text-slate-500">Similarity</div>
+                                    <div class="text-lg font-bold text-purple-600">${(result.similarity_score * 100).toFixed(1)}%</div>
+                                </div>
+                                <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center">
+                                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h3 class="text-lg font-semibold text-slate-900 mb-2">${result.subject}</h3>
+                        <p class="text-sm text-slate-600 mb-3">${result.description ? result.description.substring(0, 200) + '...' : 'No description'}</p>
+
+                        <div class="grid grid-cols-3 gap-3 pt-3 border-t border-slate-200">
+                            <div>
+                                <div class="text-xs text-slate-500 uppercase">Urgency</div>
+                                <div class="font-semibold ${getUrgencyColor(result.urgency)}">${result.urgency}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-500 uppercase">Intent</div>
+                                <div class="font-semibold text-slate-700">${result.intent ? result.intent.replace('_', ' ') : 'N/A'}</div>
+                            </div>
+                            <div>
+                                <div class="text-xs text-slate-500 uppercase">Product</div>
+                                <div class="font-semibold text-slate-700">${result.product ? result.product.replace('_', ' ') : 'N/A'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+
+    resultsContainer.innerHTML = resultsHTML;
+    resultsContainer.classList.remove('hidden');
+}
+
+function getUrgencyColor(urgency) {
+    switch(urgency) {
+        case 'critical': return 'text-red-600';
+        case 'high': return 'text-orange-600';
+        case 'medium': return 'text-yellow-600';
+        case 'low': return 'text-green-600';
+        default: return 'text-slate-600';
+    }
+}
+</script>
+{% endblock %}

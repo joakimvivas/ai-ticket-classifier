@@ -20,3 +20,9 @@ httpx==0.26.0
 
 # Rich output for CLI (optional)
 rich==13.7.0
+
+# Qdrant Vector Database
+qdrant-client==1.7.0
+
+# Inngest for background processing
+inngest==0.3.2
